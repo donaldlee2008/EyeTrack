@@ -32,7 +32,7 @@ alt="Video" width="1080" height="512" border="10" /></a>
 
 Eye Track is licensed under GNU General Public License v3.0
 ```
-Android Satellite Tracking App for Live Real Time Satellite Tracking and Predictions.
+"Eye Track" is an Android Satellite Tracking App for Live Real Time Satellite Tracking and Predictions.
 Copyright (C) 2016  Manuel Martín-González
 
 This program is free software: you can redistribute it and/or modify
