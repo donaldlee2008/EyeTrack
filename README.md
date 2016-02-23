@@ -19,7 +19,7 @@ Main Features:
 
 ## Documentation
 
-If you want to learn more, you can check [EyeTrack's docs page.](link)
+If you want to learn more, you can check <a target="_blank" href="http://manumg.github.io/EyeTrack/doc/" >EyeTrack's docs page.</a>
 
 ## Demo
 *Screenshot*
