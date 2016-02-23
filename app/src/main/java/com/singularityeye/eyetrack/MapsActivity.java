@@ -1,3 +1,23 @@
+/*
+    "Eye Track" is an Android Satellite Tracking App for Live Real Time Satellite Tracking and Predictions.
+    Copyright (C) 2016  Manuel Martín-González
+
+    This file is part of "Eye Track".
+
+    "Eye Track" is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    "Eye Track" is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with "Eye Track".  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.singularityeye.eyetrack;
 
 import android.content.BroadcastReceiver;
@@ -31,6 +51,12 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
+/**
+ * MapsActivity model is a fragment activity which can be considered as the main component of the application.
+ * It includes a google map object where tracking is displayed.
+ * @author Manuel Martin-Gonzalez
+ * @version 1.0.0-alpha
+ */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     // map object
@@ -48,10 +74,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng current_position; // current eye position
 
     // IPC
-    private BroadcastReceiver receiver; // Broadcast Receiver
-    private LocalBroadcastManager localBroadcastManager; // Helper to register local broadcasts receiver
-    private ServiceConnection connection; // Service Connection (binding)
-    private BoundService service; // Bound Service
+    private BroadcastReceiver receiver; // broadcast receiver
+    private LocalBroadcastManager localBroadcastManager; // helper to register local broadcast receiver
+    private ServiceConnection connection; // service connection (binding)
+    private BoundService service; // bound service
 
     // testing request params
     private final String NORAD_ID = "27424";
@@ -113,6 +139,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Instance map fragment and create main inter-process communication components.
+     * Get notified when the map is ready to be used.
+     * Create BroadCast Receiver to receive intents sent by bound service.
+     * Create Local Broadcast Manager to register/unregister a receiver for any local broadcasts that match the given intent filter.
+     * Create Service Connection (which monitors the connection with the service; binding).
+     * @param savedInstanceState saved data that describes the state of the activity when it was destroyed.
+     */
     // in RAM
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,18 +166,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         receiver = new BroadCastReceiver(); // create BroadCast Receiver
         IntentFilter filter = new IntentFilter(BoundService.ACTION_GETPOSITIONSBYIP);
         localBroadcastManager = LocalBroadcastManager.getInstance(this); // create localBroadcastManger
-        localBroadcastManager.registerReceiver(receiver, filter); // register a receive for any local broadcasts that match the given intentFilter
+        localBroadcastManager.registerReceiver(receiver, filter); // register a receiver for any local broadcasts that match the given intentFilter
         connection = new ServiceConnection(); // create Service Connection (monitors the connection with the service; binding)
     }
 
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
+     * This is where we can add markers or lines, add listeners or move the camera.
+     * If Google Play services is not installed on the device, the user will be prompted to install it inside the SupportMapFragment.
+     * This method will only be triggered once the user has installed Google Play services and returned to the app.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -165,17 +197,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         this.textViewPosition = (TextView) findViewById(R.id.textViewPosition);
     }
 
-    // the activity is being re-displayed to the user;
-    // called after your activity has been stopped,
-    // prior to it being started again
+    /**
+     * The activity is being re-displayed to the user.
+     * It is called after the activity has been stopped, prior to it being started again.
+     */
     @Override
     protected void onRestart() {
         Log.d("ONRESTART", "ON_RESTART !"); // debug
         super.onRestart();
     }
 
+    /**
+     * The activity is visible and interacts with the service.
+     * Bind to local service. Automatically create the service as long as the binding exists.
+     */
     // in cache, visible;
-    // interact with the service while the activity is visible
     @Override
     protected void onStart() {
         Log.d("ONSTART", "ON_START !"); // debug
@@ -189,26 +225,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onStart();
     }
 
-    // in action, visible;
-    // note: we should keep the processing that occurs
-    // at this transition to a minimum
+    /**
+     * The activity is visible and in action.
+     * We should keep the processing that occurs at this transition to a minimum.
+     */
+    // visible, in action;
     @Override
     protected void onResume() {
         Log.d("ONRESUME", "ON_RESUME !"); // debug
         super.onResume();
     }
 
+    /**
+     * The activity is partially visible.
+     * We should keep the processing that occurs at this transition to a minimum.
+     */
     // in cache, partially visible;
-    // note: we should keep the processing that occurs
-    // at this transition to a minimum
     @Override
     protected void onPause() {
         Log.d("ONPAUSE", "ON_PAUSE !"); // debug
         super.onPause();
     }
 
+    /**
+     * The activity is hidden.
+     * The activity does not interact with the service while the activity is hidden.
+     * Unbind service (automatically destroy bound service) and stop sending soap requests.
+     */
     // in RAM, hidden;
-    // not interact with the service while the activity is hidden
     @Override
     protected void onStop() {
         Log.d("ONSTOP", "ON_STOP !"); // debug
@@ -217,6 +261,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onStop();
     }
 
+    /**
+     * The activity is destroyed.
+     * Unregister (a previously registered) broadcast receiver.
+     */
     // out of RAM
     @Override
     protected void onDestroy() {

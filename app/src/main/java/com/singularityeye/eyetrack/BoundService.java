@@ -1,3 +1,23 @@
+/*
+    "Eye Track" is an Android Satellite Tracking App for Live Real Time Satellite Tracking and Predictions.
+    Copyright (C) 2016  Manuel Martín-González
+
+    This file is part of "Eye Track".
+
+    "Eye Track" is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    "Eye Track" is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with "Eye Track".  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.singularityeye.eyetrack;
 
 import android.app.Service;
@@ -17,6 +37,11 @@ import org.ksoap2.transport.HttpTransportSE;
 
 import java.util.Vector;
 
+/**
+ * BoundService model is a Service that includes a single background task/thread to execute soap requests and send local broadcasts (actions) to client.
+ * @author Manuel Martin-Gonzalez
+ * @version 1.0.0-alpha
+ */
 public class BoundService extends Service {
 
     // soap web services communication
@@ -58,11 +83,13 @@ public class BoundService extends Service {
 
     private final IBinder binder = new LocalBinder(); // binder: the programming interface that clients use to interact with the service
 
-    // note: the most important part is defining the service's IBinder interface (Binder implements IBinder);
-    // local binder/proxy model with a method to obtain the service reference,
-    // with this reference clients can make calls to service methods;
-    // note: local service implies that the service is in the same process as the client,
-    // take into account that service is not a thread;
+    /**
+     * Local binder/proxy model with a method to obtain the service reference.
+     * With this reference, clients can make calls to service methods.
+     * Local service implies that service is in the same process as client.
+     * Note: Take into account that the most important part is defining the service's IBinder interface (Binder implements IBinder).
+     */
+    // note: take into account that service is not a thread;
     // note: a remote service is a service that is in a different process
     public class LocalBinder extends Binder{
         BoundService getService(){
@@ -73,13 +100,20 @@ public class BoundService extends Service {
     // last eye position
     private Satellite last_eye;
 
-    // intent action definition in sendBroadCast method (the same as soap web services method name)
+    /**
+     * Given action definition for intent in sendBroadCast method (it has the same name as soap web services method).
+     */
     public static final String ACTION_GETPOSITIONSBYIP = "com.singularityeye.eyetrack.action.GETPOSITIONSBYIP";
-    // last eye definition object for intent extra data in sendBroadCast method
+    /**
+     * Given object definition for intent extra data in sendBroadCast method.
+     */
     public static final String OBJECT_GETPOSITIONSBYIP = "LAST_EYE";
 
-    // provides binding for the service
-    // returns local binder/proxy
+    /**
+     * Provides binding for the service.
+     * @param intent binding intent
+     * @return local binder/proxy
+     */
     // note: service is running and client is bound for first time
     @Override
     public IBinder onBind(Intent intent) {
@@ -87,7 +121,11 @@ public class BoundService extends Service {
         return binder;
     }
 
-    // provides unbinding for the service
+    /**
+     * Provides unbinding for the service (stops sending soap requests).
+     * @param intent unbinding intent
+     * @return false (boolean), it means that onRebind method later is not called when clients bind to service
+     */
     // called when all clients have disconnected from a particular interface;
     @Override
     public boolean onUnbind(Intent intent) {
@@ -96,15 +134,24 @@ public class BoundService extends Service {
         return false; // onRebind method later is not called when clients bind to service
     }
 
-    // when the last client unbinds from the service,
-    // the system destroys the service
+    /**
+     * Bound service is destroyed.
+     * When the last client unbinds from the service the system destroys the service.
+     */
     @Override
     public void onDestroy() {
         Log.d("SERVICE", "ON_DESTROY !"); // debug
         super.onDestroy();
     }
 
-    // create new task and start sending soap requests
+    /**
+     * Create new task/thread.
+     * It starts sending soap requests, and sending local broadcasts (actions) to client.
+     * @param id string that identifies the platform
+     * @param ip android device ip
+     * @param seconds the last seconds for what we get the positions
+     * @param key string that holds the soap web service license key
+     */
     public void initTask(String id, String ip, String seconds, String key){
         Log.d("TASK", "INIT TASK: CREATE AND START NEW TASK !"); // debug
 
@@ -119,7 +166,10 @@ public class BoundService extends Service {
         this.task.start();
     }
 
-    // stop thread/task
+    /**
+     * Stop the main task/thread.
+     * It stops sending soap requests, and sending local broadcasts (actions) to client.
+     */
     public void stopTask(){
         this.task.stopTask();
     }
